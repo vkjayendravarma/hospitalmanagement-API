@@ -1,8 +1,11 @@
-from src import app,db
+from src import app,db,Config
 from flask import request
 from src.models import usersModel
 from flask_mongoengine import mongoengine
 import bcrypt
+# from flask_jwt import JWT, jwt_required, current_identity
+import jwt
+import datetime
 
 
 
@@ -30,15 +33,16 @@ def login():
     
     user = usersModel.User.objects(email=email).first()
     if(user):
+        print(user)
         if(bcrypt.checkpw(password, user.password.encode("UTF-8"))):
+            token = jwt.encode({'user': {
+                "userID": "user['_id']",
+                "level": user.accessLevel
+                }, "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, Config.SECRET_KEY)
             return {
                 "success": True,
-                "res": {
-                    "name": user.name,
-                    "accessLevel": user.accessLevel
-                }
-                
-                }
+                "token": token.decode('UTF-8')                
+            }
         else:
             return "failed"
         

@@ -1,6 +1,10 @@
 astroid==2.4.2
+bcrypt==3.1.7
+cffi==1.14.0
 click==7.1.2
+dnspython==1.16.0
 Flask==1.1.2
+Flask-JWT==0.3.2
 flask-mongoengine==0.9.5
 Flask-WTF==0.14.3
 isort==4.3.21
@@ -10,6 +14,8 @@ lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
 mongoengine==0.20.0
+pycparser==2.20
+PyJWT==1.4.2
 pylint==2.5.3
 pymongo==3.10.1
 python-dotenv==0.13.0
