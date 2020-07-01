@@ -1,9 +1,9 @@
 from src import app,db,Config
 from flask import request
+from flask_api import status
 from src.models import usersModel
 from flask_mongoengine import mongoengine
 import bcrypt
-# from flask_jwt import JWT, jwt_required, current_identity
 import jwt
 import datetime
 
@@ -11,10 +11,14 @@ import datetime
 
 @app.route('/register', methods=['POST'])
 def register():
-    name = request.form['name']
-    email = request.form['email']
-    password = request.form.get('password').encode("UTF-8")
-    accessLevel = request.form['accessLevel']
+    try:
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form.get('password').encode("UTF-8")
+        accessLevel = request.form['accessLevel']
+    except KeyError as e:
+        return {"success": False, "message": "one or more missing fields"}, status.HTTP_400_BAD_REQUEST
+    
     
     password = bcrypt.hashpw(password, bcrypt.gensalt())
     

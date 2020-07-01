@@ -10,3 +10,4 @@ db = MongoEngine()
 db.init_app(app)
 
 from src.routes import auth
+from src.routes import reception
