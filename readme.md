@@ -32,6 +32,17 @@ for Linux
 
 ## APP Setup 
 
+Run the Virtual Environment
+
+```virtualenv virtual_environmen_name```
+
+Activate usingVirtual environment using
+
+```cd virtual_environmen_name```
+```source bin/activate```
+
+After you have successfully activated your virtual environment, cd into the source code were the "requirements.txt" file is
+
 run ``` pip3 install requrements.txt ``` to install all the requirements
 
 then run ``` flask run ``` to start the server
