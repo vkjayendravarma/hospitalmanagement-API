@@ -1,12 +1,12 @@
 from src import db
-import time
+import datetime
 class LabInventory(db.Document):
     name=db.StringField()
     price=db.StringField()
     
 
-class LabInvoice(db.EmbeddedDocument):
-    date = time.strftime("%H:%M:%S", time.localtime() ) 
-    items = db.ListField(db.StringField())
+class LabInvoice(db.Document):
+    date = datetime.datetime.utcnow()
+    items = db.ListField(db.ObjectIdField())
     total = db.StringField()
     

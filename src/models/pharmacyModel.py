@@ -1,14 +1,14 @@
 from src import db
-import time
+import datetime
 
 class PahrmacyInventory(db.Document):
     name=db.StringField()
     quantity=db.IntField()
-    price=db.StringField()
+    price=db.FloatField()
     
 
-class PharmacyInvoice(db.EmbeddedDocument):
-    date = time.strftime("%H:%M:%S", time.localtime() ) 
-    items = []
-    total = db.StringField()
+class PharmacyInvoice(db.Document):
+    date = db.DateTimeField(default=datetime.datetime.now)
+    items = db.ListField(db.DictField())
+    total = db.FloatField()
     
