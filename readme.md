@@ -36,9 +36,12 @@ Run the Virtual Environment
 
 ```virtualenv virtual_environmen_name```
 
-Activate usingVirtual environment using
+Using Virtual environment using
 
 ```cd virtual_environmen_name```
+
+Activate Virtual environment
+
 ```source bin/activate```
 
 After you have successfully activated your virtual environment, cd into the source code were the "requirements.txt" file is
