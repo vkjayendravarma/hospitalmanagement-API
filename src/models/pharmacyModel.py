@@ -7,7 +7,7 @@ class PahrmacyInventory(db.Document):
     price=db.StringField()
     
 
-class PharmacyInvoice(db.Document):
+class PharmacyInvoice(db.EmbeddedDocument):
     date = time.strftime("%H:%M:%S", time.localtime() ) 
     items = []
     total = db.StringField()

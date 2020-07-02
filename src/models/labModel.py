@@ -5,8 +5,8 @@ class LabInventory(db.Document):
     price=db.StringField()
     
 
-class LabInvoice(db.Document):
+class LabInvoice(db.EmbeddedDocument):
     date = time.strftime("%H:%M:%S", time.localtime() ) 
-    items = []
+    items = db.ListField(db.StringField())
     total = db.StringField()
     
