@@ -19,8 +19,12 @@ def newPatient():
         return {"success": False, "message": "one or more missing fields"}, status.HTTP_400_BAD_REQUEST
     
     patientId = str(100000000 + patientModel.Patient.objects().count())
-    patient = patientModel.Patient(ssnid=ssnid,patientId=patientId, name=name, age =age, address=address, dateOfJoining=dateOfJoining, roomType=roomType).save()
-    patientid = str(patient['patientId'])
+    try:
+        patient = patientModel.Patient(ssnid=ssnid,patientId=patientId, name=name, age =age, address=address, dateOfJoining=dateOfJoining, roomType=roomType).save()
+        patientid = str(patient['patientId'])
+    except mongoengine.errors as i:
+        return i
+    
     return {
         'success': True,
         'res': {            
@@ -29,6 +33,7 @@ def newPatient():
         }
     }
     
+# return all patients
 @app.route('/reception/patients',methods=['GET'])
 def allPatients():
     data = patientModel.Patient.objects()
@@ -42,16 +47,21 @@ def allPatients():
 # PUT change status to Discharged
 # DELETE delete patient
     
-@app.route('/reception/patients/<patientId>', methods=['GET', 'PUT','POST', 'DELETE'])
+@app.route('/reception/patients/individual/<patientId>', methods=['GET', 'PUT','POST', 'DELETE'])
 def Patient(patientId):
     
     if request.method == 'GET':
-        data = patientModel.Patient.objects(patientId=patientId).first()        
-        pharmacyInvoices = shared.getPharmacyInvoices(data.pharmacy)
-        data['pharmacy'] = pharmacyInvoices
+        data = patientModel.Patient.objects(patientId=patientId).first() 
+        if(data):
+            pharmacyInvoices = shared.getPharmacyInvoices(data.pharmacy)
+            data['pharmacy'] = pharmacyInvoices
+            return {
+                'success': True,
+                'res': data
+            }
         return {
-            'success': True,
-            'res': data
+            'success': False,
+            'message': 'Patient not found'            
         }
         
     if request.method == 'POST':
@@ -70,7 +80,10 @@ def Patient(patientId):
             
             data.update(ssnid=ssnid,patientId=patientId, name=name, age =age, address=address, dateOfJoining=dateOfJoining, roomType=roomType)
         else:
-            return "False"
+            return {
+            'success': False,
+            'message': 'Patient not found'            
+            }
         
         return {
             'success': True,
@@ -79,21 +92,34 @@ def Patient(patientId):
         
     if(request.method == 'PUT'):
         data = patientModel.Patient.objects(patientId=patientId)
-        data.update(status = 'Discharged')
-        
-        return {
-            'success': True,
-            'message': 'patient discharged'
-        }
+        if(data):
+            data.update(status = 'Discharged')
+            
+            return {
+                'success': True,
+                'message': 'patient discharged'
+            }
+        else:
+            return {
+            'success': False,
+            'message': 'Patient not found'            
+            }
     
     if(request.method == 'DELETE'):
         data = patientModel.Patient.objects(patientId=patientId)
-        data.delete()
         
-        return {
-            'success': True,
-            'message': 'deleted'
-        }
+        if(data):
+            data.delete()
+            
+            return {
+                'success': True,
+                'message': 'deleted'
+            }
+        else:
+            return {
+            'success': False,
+            'message': 'Patient not found'            
+            }
         
         
         
