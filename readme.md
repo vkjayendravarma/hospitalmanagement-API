@@ -46,6 +46,6 @@ Activate Virtual environment
 
 After you have successfully activated your virtual environment, cd into the source code were the "requirements.txt" file is
 
-run ``` pip3 install requrements.txt ``` to install all the requirements
+run ``` pip3 install -r requrements.txt ``` to install all the requirements
 
 then run ``` flask run ``` to start the server
