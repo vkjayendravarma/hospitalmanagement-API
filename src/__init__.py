@@ -20,3 +20,4 @@ cors = CORS(app, resources={
 from src.routes import auth
 from src.routes import reception
 from src.routes import pharmacy
+from src.routes import lab

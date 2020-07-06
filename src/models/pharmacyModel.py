@@ -8,7 +8,7 @@ class PahrmacyInventory(db.Document):
     
 
 class PharmacyInvoice(db.Document):
-    date = db.DateTimeField(default=datetime.datetime.now)
+    date = db.DateTimeField(default=datetime.datetime.utcnow())
     items = db.ListField(db.DictField())
     total = db.FloatField()
     

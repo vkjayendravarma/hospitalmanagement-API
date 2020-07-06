@@ -3,6 +3,7 @@ from flask import request
 from flask_mongoengine import mongoengine
 from flask_api import status
 
+from src.routes import shared
 from src.models import pharmacyModel, patientModel
 
 @app.route('/pharmacy/inventory/manageinventory', methods=['GET', 'POST'])
@@ -35,15 +36,33 @@ def getInventory(medicineID=None):
 
             
 # add medicions to stock
-@app.route('/pharmacy/inventory/manageinventory/<medicinID>', methods=['PUT'])
+@app.route('/pharmacy/inventory/manageinventory/<medicineID>', methods=['PUT'])
 def addSKU(medicineID):
     data = pharmacyModel.PahrmacyInventory.objects(id=medicineID).first()
+    print(str(request.form['quantity']))
+    
     quantityUpdate = data.quantity + int(request.form['quantity'])
     data.update(quantity=quantityUpdate)
     return {
         'success': True,
         'res': data
         }
+
+
+@app.route('/pharmacy/patient/getpatientdata/<patientId>', methods=['GET'])
+def pharmaGetPateient(patientId):
+    data = patientModel.Patient.objects(patientId=patientId).first()
+    if(data):
+        pharmacyInvoices = shared.getPharmacyInvoices(data.pharmacy)
+        data['pharmacy'] = pharmacyInvoices
+        return {
+            'success': True,
+            'res': data
+        }
+    return {
+        'success': False,
+        'message': 'Patient not found'
+    }
             
 # new invoice to patients
 @app.route('/pharmacy/patient/newinvoice/<patientID>', methods=['POST'])
@@ -69,7 +88,7 @@ def newinvoice(patientID):
                 else:
                     res.append({'name': medicine.name, 'qunantity': medicine.quantity})
             
-            newInvoice = pharmacyModel.PharmacyInvoice(items=invoice, total = invoiceTotal).save()
+            newInvoice = pharmacyModel.PharmacyInvoice( items=invoice, total = invoiceTotal).save()
             
             if (len(patient.pharmacy)>1):
                 pharma =  patient.pharmacy               
@@ -88,7 +107,7 @@ def newinvoice(patientID):
                 
             
             return {
-                'status': True,
+                'success': True,
                 'res': res
             }    
         else:

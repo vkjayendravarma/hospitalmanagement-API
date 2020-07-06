@@ -9,7 +9,7 @@ from src.routes import shared
 
 @app.route('/reception/patients/new', methods=['POST'])
 def newPatient():
-    req = dict(request.get_json())
+    req = request.form
    
     try:
         ssnid = req['ssnid']
@@ -24,13 +24,17 @@ def newPatient():
         print(str(e))
         return "Null"
 
-    patientId = str(100000000 + patientModel.Patient.objects().count())
+    config = patientModel.config.objects().first()
+    patientId = config.patientId +1
+    print(patientId)
+    config.update(patientId=patientId)
     try:
         patient = patientModel.Patient(ssnid=ssnid, patientId=patientId, name=name, age=age, address=address, dateOfJoining=dateOfJoining, roomType=roomType, city=city, state=state).save()
         patientid = str(patient['patientId'])
     except mongoengine.errors.NotUniqueError as e:
         return {'success': False, 'message': "SSN ID exists"}
     except mongoengine.errors.ValidationError as e:
+        print (e)
         return {'success': False, 'message': "Missing field"}
 
     return {
@@ -66,6 +70,8 @@ def Patient(patientId):
         if(data):
             pharmacyInvoices = shared.getPharmacyInvoices(data.pharmacy)
             data['pharmacy'] = pharmacyInvoices
+            labInvoices = shared.getLabInvoices(data.diagnostics)
+            data['diagnostics'] = labInvoices
             return {
                 'success': True,
                 'res': data
@@ -79,7 +85,7 @@ def Patient(patientId):
         data = patientModel.Patient.objects(patientId=patientId)
         if(data):
             print(data)
-            req = request.get_json()
+            req = request.form
             
 
             try:
