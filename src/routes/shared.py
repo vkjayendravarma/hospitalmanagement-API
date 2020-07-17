@@ -62,7 +62,7 @@ def getLabInvoices(inoviceIdsList):
         return invoices
 
     for invoiceId in inoviceIdsList:
-        invoices.append(getLabInvoice(invoiceId))     
+        invoices.append(getLabInvoice(invoiceId))  
 
     return invoices
             

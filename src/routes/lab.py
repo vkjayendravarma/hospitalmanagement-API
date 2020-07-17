@@ -5,9 +5,18 @@ from flask_api import status
 
 from src.routes import shared
 from src.models import patientModel, labModel
+from src.routes.security import authorization
+
 
 @app.route('/lab/inventory/manageinventory', methods=['GET', 'POST'])
-def getLabInventory(medicineID=None):
+@authorization
+def getLabInventory(role,medicineID=None):
+    L2Auth = role in ["HMAD", "HMLD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
     #get all tests
     if (request.method == 'GET'):
         data = labModel.LabInventory.objects()
@@ -34,7 +43,14 @@ def getLabInventory(medicineID=None):
 
 
 @app.route('/lab/patient/getpatientdata/<patientId>', methods=['GET'])
-def labGetPateient(patientId):
+@authorization
+def labGetPateient(role,patientId):
+    L2Auth = role in ["HMAD", "HMLD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
     data = patientModel.Patient.objects(patientId=patientId).first()
     if(data):
         labInvoices = shared.getLabInvoices(data.diagnostics)
@@ -51,7 +67,14 @@ def labGetPateient(patientId):
 
 # new invoice to patients
 @app.route('/lab/patient/newinvoice/<patientID>', methods=['POST'])
-def newLabinvoice(patientID):
+@authorization
+def newLabinvoice(role,patientID):
+    L2Auth = role in ["HMAD", "HMLD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
     if(patientID):
         print(patientID)
         res = []

@@ -5,10 +5,18 @@ from flask_mongoengine import mongoengine
 from flask_api import status
 
 from src.routes import shared
+from src.routes.security import authorization
 
 
 @app.route('/reception/patients/new', methods=['POST'])
-def newPatient():
+@authorization
+def newPatient(role):
+    L2Auth = role in ["HMAD", "HMFD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
     req = request.form
    
     try:
@@ -49,11 +57,18 @@ def newPatient():
 
 
 @app.route('/reception/patients', methods=['GET'])
-def allPatients():
-    data = patientModel.Patient.objects()
+@authorization
+def allPatients(role):
+    L2Auth = role in ["HMAD", "HMFD"]
+    if L2Auth:
+        data = patientModel.Patient.objects()
+        return {
+            'success': True,
+            'res': data
+        }, status.HTTP_200_OK
     return {
-        'success': True,
-        'res': data
+        'success': False,
+        'message': "Unauthorised"
     }
 
 # GET return patient data
@@ -63,7 +78,14 @@ def allPatients():
 
 
 @app.route('/reception/patients/individual/<patientId>', methods=['GET', 'PUT', 'POST', 'DELETE'])
-def Patient(patientId):
+@authorization
+def Patient(role,patientId):
+    L2Auth = role in ["HMAD", "HMFD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
 
     if request.method == 'GET':
         data = patientModel.Patient.objects(patientId=patientId).first()

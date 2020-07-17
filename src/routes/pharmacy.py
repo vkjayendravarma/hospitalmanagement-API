@@ -5,9 +5,18 @@ from flask_api import status
 
 from src.routes import shared
 from src.models import pharmacyModel, patientModel
+from src.routes.security import authorization
+
 
 @app.route('/pharmacy/inventory/manageinventory', methods=['GET', 'POST'])
-def getInventory(medicineID=None):
+@authorization
+def getInventory(role,medicineID=None):
+    L2Auth = role in ["HMAD", "HMLD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
     #get all medicines
     if (request.method == 'GET'):
         data = pharmacyModel.PahrmacyInventory.objects()
@@ -37,7 +46,14 @@ def getInventory(medicineID=None):
             
 # add medicions to stock
 @app.route('/pharmacy/inventory/manageinventory/<medicineID>', methods=['PUT'])
-def addSKU(medicineID):
+@authorization
+def addSKU(role,medicineID):
+    L2Auth = role in ["HMAD", "HMLD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
     data = pharmacyModel.PahrmacyInventory.objects(id=medicineID).first()
     print(str(request.form['quantity']))
     
@@ -50,7 +66,14 @@ def addSKU(medicineID):
 
 
 @app.route('/pharmacy/patient/getpatientdata/<patientId>', methods=['GET'])
-def pharmaGetPateient(patientId):
+@authorization
+def pharmaGetPateient(role,patientId):
+    L2Auth = role in ["HMAD", "HMLD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
     data = patientModel.Patient.objects(patientId=patientId).first()
     if(data):
         pharmacyInvoices = shared.getPharmacyInvoices(data.pharmacy)
@@ -66,7 +89,14 @@ def pharmaGetPateient(patientId):
             
 # new invoice to patients
 @app.route('/pharmacy/patient/newinvoice/<patientID>', methods=['POST'])
-def newinvoice(patientID):
+@authorization
+def newinvoice(role,patientID):
+    L2Auth = role in ["HMAD", "HMLD"]
+    if not L2Auth:
+        return {
+            "success": False,
+            "message": "Unauthorized"
+        }
     if(patientID):
         print(patientID)
         res = []
