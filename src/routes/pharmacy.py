@@ -45,15 +45,16 @@ def getInventory(role,medicineID=None):
 
             
 # add medicions to stock
-@app.route('/pharmacy/inventory/manageinventory/<medicineID>', methods=['PUT'])
+@app.route('/pharmacy/inventory/manageinventory', methods=['PUT'])
 @authorization
-def addSKU(role,medicineID):
+def addSKU(role):
     L2Auth = role in ["HMAD", "HMLD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
+    medicineID = request.args['medicineID']
     data = pharmacyModel.PahrmacyInventory.objects(id=medicineID).first()
     print(str(request.form['quantity']))
     
@@ -65,15 +66,16 @@ def addSKU(role,medicineID):
         }
 
 
-@app.route('/pharmacy/patient/getpatientdata/<patientId>', methods=['GET'])
+@app.route('/pharmacy/patient/getpatientdata', methods=['GET'])
 @authorization
-def pharmaGetPateient(role,patientId):
+def pharmaGetPateient(role):
     L2Auth = role in ["HMAD", "HMLD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
+    patientId = request.args['patientId']
     data = patientModel.Patient.objects(patientId=patientId).first()
     if(data):
         pharmacyInvoices = shared.getPharmacyInvoices(data.pharmacy)
@@ -88,15 +90,16 @@ def pharmaGetPateient(role,patientId):
     }
             
 # new invoice to patients
-@app.route('/pharmacy/patient/newinvoice/<patientID>', methods=['POST'])
+@app.route('/pharmacy/patient/newinvoice', methods=['POST'])
 @authorization
-def newinvoice(role,patientID):
+def newinvoice(role):
     L2Auth = role in ["HMAD", "HMLD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
+    patientID = request.args['patientID']
     if(patientID):
         print(patientID)
         res = []
@@ -145,11 +148,3 @@ def newinvoice(role,patientID):
                 'success': False,
                 'message': 'No patient found'
             }, status.HTTP_404_NOT_FOUND
-            
-
-
-    
-    
-
-
-        

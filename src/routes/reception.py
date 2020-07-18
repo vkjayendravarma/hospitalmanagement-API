@@ -3,6 +3,8 @@ from flask import request
 from src.models import patientModel
 from flask_mongoengine import mongoengine
 from flask_api import status
+from markupsafe import escape
+
 
 from src.routes import shared
 from src.routes.security import authorization
@@ -17,8 +19,8 @@ def newPatient(role):
             "success": False,
             "message": "Unauthorized"
         }
-    req = request.form
-   
+    req = request.get_json()
+    print(str(req))
     try:
         ssnid = req['ssnid']
         name = req['name']
@@ -30,7 +32,9 @@ def newPatient(role):
         state = req['state']
     except KeyError as e:
         print(str(e))
-        return "Null"
+        return {
+            "message": "missing"
+        }
 
     config = patientModel.config.objects().first()
     patientId = config.patientId +1
@@ -58,13 +62,13 @@ def newPatient(role):
 
 @app.route('/reception/patients', methods=['GET'])
 @authorization
-def allPatients(role):
+def allPatients(role):    
     L2Auth = role in ["HMAD", "HMFD"]
     if L2Auth:
         data = patientModel.Patient.objects()
         return {
-            'success': True,
-            'res': data
+                'success': True,
+                'res': data
         }, status.HTTP_200_OK
     return {
         'success': False,
@@ -77,16 +81,17 @@ def allPatients(role):
 # DELETE delete patient
 
 
-@app.route('/reception/patients/individual/<patientId>', methods=['GET', 'PUT', 'POST', 'DELETE'])
+@app.route('/reception/patients/individual', methods=['GET', 'PUT', 'POST', 'DELETE'])
 @authorization
-def Patient(role,patientId):
+def Patient(role):
     L2Auth = role in ["HMAD", "HMFD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
-
+    patientId = request.args['patientId']
+    
     if request.method == 'GET':
         data = patientModel.Patient.objects(patientId=patientId).first()
         if(data):
@@ -106,9 +111,7 @@ def Patient(role,patientId):
     if request.method == 'POST':
         data = patientModel.Patient.objects(patientId=patientId)
         if(data):
-            print(data)
-            req = request.form
-            
+            req = request.get_json()           
 
             try:
                 ssnid = req['ssnid']
@@ -117,22 +120,23 @@ def Patient(role,patientId):
                 address = req['address']
                 dateOfJoining = req['dateOfJoining']
                 roomType = req['roomType']
+                city = req['city']
+                state = req['state']               
 
             except KeyError:
-                return {"success": False, "message": "one or more missing fields"}, status.HTTP_400_BAD_REQUEST
-
-            data.update(ssnid=ssnid, patientId=patientId, name=name, age=age,
-                        address=address, dateOfJoining=dateOfJoining, roomType=roomType)
+                return {"success": False, "message": "se"}
+            data.update(ssnid=ssnid, patientId=patientId, name=name, age=age, address=address, dateOfJoining=dateOfJoining, roomType=roomType, city=city, state=state)
+            return {
+                'success': True,
+                'message': 'updated'
+            }
         else:
             return {
                 'success': False,
                 'message': 'Patient not found'
             }
 
-        return {
-            'success': True,
-            'message': 'updated'
-        }
+        
 
     if(request.method == 'PUT'):
         data = patientModel.Patient.objects(patientId=patientId)

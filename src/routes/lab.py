@@ -42,15 +42,16 @@ def getLabInventory(role,medicineID=None):
             }
 
 
-@app.route('/lab/patient/getpatientdata/<patientId>', methods=['GET'])
+@app.route('/lab/patient/getpatientdata', methods=['GET'])
 @authorization
-def labGetPateient(role,patientId):
+def labGetPateient(role):
     L2Auth = role in ["HMAD", "HMLD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
+    patientId = request.args['patientId']
     data = patientModel.Patient.objects(patientId=patientId).first()
     if(data):
         labInvoices = shared.getLabInvoices(data.diagnostics)
@@ -66,15 +67,16 @@ def labGetPateient(role,patientId):
 
 
 # new invoice to patients
-@app.route('/lab/patient/newinvoice/<patientID>', methods=['POST'])
+@app.route('/lab/patient/newinvoice', methods=['POST'])
 @authorization
-def newLabinvoice(role,patientID):
+def newLabinvoice(role):
     L2Auth = role in ["HMAD", "HMLD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
+    patientID = request.args['patientId']
     if(patientID):
         print(patientID)
         res = []

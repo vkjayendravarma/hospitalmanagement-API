@@ -47,7 +47,7 @@ def login():
         print(user)
 
         if(bcrypt.checkpw(password, user.password.encode("UTF-8"))):
-            token = jwt.encode({'user': str(user['id']), "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, Config.SECRET_KEY)
+            token = jwt.encode({'user': str(user['id']), "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=455)}, Config.SECRET_KEY)
             return {
                 "success": True,
                 "token": token.decode('UTF-8') + user['dept']              
