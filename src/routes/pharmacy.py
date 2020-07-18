@@ -26,10 +26,11 @@ def getInventory(role,medicineID=None):
             }
     # new medicine
     if (request.method == 'POST'):
+        req = request.get_json()
         try:
-            name = request.form['name']
-            quantity = int(request.form['quantity'])
-            price = float(request.form['price'])
+            name = req['name']
+            quantity = int(req['quantity'])
+            price = float(req['price'])
         except KeyError:
             return {
                 'success': False,
@@ -45,20 +46,20 @@ def getInventory(role,medicineID=None):
 
             
 # add medicions to stock
-@app.route('/pharmacy/inventory/manageinventory', methods=['PUT'])
+@app.route('/pharmacy/inventory/manageinventory/<medicineID>', methods=['PUT'])
 @authorization
-def addSKU(role):
+def addSKU(role,medicineID):
     L2Auth = role in ["HMAD", "HMLD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
-    medicineID = request.args['medicineID']
     data = pharmacyModel.PahrmacyInventory.objects(id=medicineID).first()
-    print(str(request.form['quantity']))
-    
-    quantityUpdate = data.quantity + int(request.form['quantity'])
+
+    sku = request.get_json()
+
+    quantityUpdate = data.quantity + int(sku)
     data.update(quantity=quantityUpdate)
     return {
         'success': True,
@@ -66,16 +67,15 @@ def addSKU(role):
         }
 
 
-@app.route('/pharmacy/patient/getpatientdata', methods=['GET'])
+@app.route('/pharmacy/patient/getpatientdata/<patientId>', methods=['GET'])
 @authorization
-def pharmaGetPateient(role):
+def pharmaGetPateient(role,patientId):
     L2Auth = role in ["HMAD", "HMLD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
-    patientId = request.args['patientId']
     data = patientModel.Patient.objects(patientId=patientId).first()
     if(data):
         pharmacyInvoices = shared.getPharmacyInvoices(data.pharmacy)
@@ -90,16 +90,15 @@ def pharmaGetPateient(role):
     }
             
 # new invoice to patients
-@app.route('/pharmacy/patient/newinvoice', methods=['POST'])
+@app.route('/pharmacy/patient/newinvoice/<patientID>', methods=['POST'])
 @authorization
-def newinvoice(role):
+def newinvoice(role,patientID):
     L2Auth = role in ["HMAD", "HMLD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
-    patientID = request.args['patientID']
     if(patientID):
         print(patientID)
         res = []

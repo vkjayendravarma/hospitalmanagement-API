@@ -81,16 +81,15 @@ def allPatients(role):
 # DELETE delete patient
 
 
-@app.route('/reception/patients/individual', methods=['GET', 'PUT', 'POST', 'DELETE'])
+@app.route('/reception/patients/individual/<patientId>', methods=['GET', 'PUT', 'POST', 'DELETE'])
 @authorization
-def Patient(role):
+def Patient(role,patientId):
     L2Auth = role in ["HMAD", "HMFD"]
     if not L2Auth:
         return {
             "success": False,
             "message": "Unauthorized"
         }
-    patientId = request.args['patientId']
     
     if request.method == 'GET':
         data = patientModel.Patient.objects(patientId=patientId).first()
@@ -111,8 +110,7 @@ def Patient(role):
     if request.method == 'POST':
         data = patientModel.Patient.objects(patientId=patientId)
         if(data):
-            req = request.get_json()           
-
+            req = request.get_json()                   
             try:
                 ssnid = req['ssnid']
                 name = req['name']

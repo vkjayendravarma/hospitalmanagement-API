@@ -38,6 +38,6 @@ def authorization(func):
                 'success': False,
                 'message': 'Unauthorised bitch'
             }, status.HTTP_403_FORBIDDEN
-        return func(role, *args, *kwargs)
+        return func(role, *args, **kwargs)
     return decorated
     

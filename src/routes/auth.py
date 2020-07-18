@@ -6,17 +6,24 @@ from flask_mongoengine import mongoengine
 import bcrypt
 import jwt
 import datetime
+from src.routes.security import authorization
 
 
 
 @app.route('/register', methods=['POST'])
-def register():
+@authorization
+def register(role):
+    if role != 'HMAD':
+        return {
+            'success': False,
+            'message': 'Unauthorized'
+        }
+    req =request.get_json()
     try:
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form.get('password').encode("UTF-8")
-        dept = request.form['dept']
-        print(request.form)
+        name = req['name']
+        email = req['email']
+        password = req['password'].encode("UTF-8")
+        dept = req['dept']
     except KeyError as e:
         return {"success": False, "message": "one or more missing fields"}, status.HTTP_400_BAD_REQUEST
     
