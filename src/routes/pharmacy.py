@@ -100,7 +100,6 @@ def newinvoice(role,patientID):
             "message": "Unauthorized"
         }
     if(patientID):
-        print(patientID)
         res = []
         invoice = []
         invoiceTotal = 0
@@ -125,10 +124,8 @@ def newinvoice(role,patientID):
             if (len(patient.pharmacy)>1):
                 pharma =  patient.pharmacy               
                 if(isinstance(pharma, str)):
-                    print("string")
                     updatePatient = [patient.pharmacy, str(newInvoice['id'])]
                 if(isinstance(pharma, list)):
-                    print("list")
                     updatePatient = patient.pharmacy
                     updatePatient.append(str(newInvoice['id']))                                                                                          
                                         

@@ -77,7 +77,6 @@ def newLabinvoice(role,patientID):
             "message": "Unauthorized"
         }
     if(patientID):
-        print(patientID)
         res = []
         invoice = []
         invoiceTotal = 0
@@ -94,10 +93,8 @@ def newLabinvoice(role,patientID):
             if (len(patient.diagnostics)>1):
                 pharma =  patient.diagnostics               
                 if(isinstance(pharma, str)):
-                    print("string")
                     updatePatient = [patient.diagnostics, str(newInvoice['id'])]
                 if(isinstance(pharma, list)):
-                    print("list")
                     updatePatient = patient.diagnostics
                     updatePatient.append(str(newInvoice['id']))                                                                                          
                                         

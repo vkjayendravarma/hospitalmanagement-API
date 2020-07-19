@@ -33,7 +33,6 @@ def register(role):
     try:        
         usersModel.User(name=name, email=email, password=password, dept=dept).save()
     except mongoengine.errors.NotUniqueError as e:
-        print(e)
         return {
             'success': False,
             'message': 'User exists'
@@ -51,7 +50,6 @@ def login():
     
     user = usersModel.User.objects(email=email).first()
     if(user):
-        print(user)
 
         if(bcrypt.checkpw(password, user.password.encode("UTF-8"))):
             token = jwt.encode({'user': str(user['id']), "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=455)}, Config.SECRET_KEY)

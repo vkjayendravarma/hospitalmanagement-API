@@ -20,7 +20,6 @@ def newPatient(role):
             "message": "Unauthorized"
         }
     req = request.get_json()
-    print(str(req))
     try:
         ssnid = req['ssnid']
         name = req['name']
@@ -31,14 +30,12 @@ def newPatient(role):
         city = req['city']
         state = req['state']
     except KeyError as e:
-        print(str(e))
         return {
             "message": "missing"
         }
 
     config = patientModel.config.objects().first()
     patientId = config.patientId +1
-    print(patientId)
     config.update(patientId=patientId)
     try:
         patient = patientModel.Patient(ssnid=ssnid, patientId=patientId, name=name, age=age, address=address, dateOfJoining=dateOfJoining, roomType=roomType, city=city, state=state).save()
@@ -46,7 +43,6 @@ def newPatient(role):
     except mongoengine.errors.NotUniqueError as e:
         return {'success': False, 'message': "SSN ID exists"}
     except mongoengine.errors.ValidationError as e:
-        print (e)
         return {'success': False, 'message': "Missing field"}
 
     return {
