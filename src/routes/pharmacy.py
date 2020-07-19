@@ -11,7 +11,7 @@ from src.routes.security import authorization
 @app.route('/pharmacy/inventory/manageinventory', methods=['GET', 'POST'])
 @authorization
 def getInventory(role,medicineID=None):
-    L2Auth = role in ["HMAD", "HMLD"]
+    L2Auth = role in ["HMAD", "HMPD"]
     if not L2Auth:
         return {
             "success": False,
@@ -49,7 +49,7 @@ def getInventory(role,medicineID=None):
 @app.route('/pharmacy/inventory/manageinventory/<medicineID>', methods=['PUT'])
 @authorization
 def addSKU(role,medicineID):
-    L2Auth = role in ["HMAD", "HMLD"]
+    L2Auth = role in ["HMAD", "HMPD"]
     if not L2Auth:
         return {
             "success": False,
@@ -70,7 +70,7 @@ def addSKU(role,medicineID):
 @app.route('/pharmacy/patient/getpatientdata/<patientId>', methods=['GET'])
 @authorization
 def pharmaGetPateient(role,patientId):
-    L2Auth = role in ["HMAD", "HMLD"]
+    L2Auth = role in ["HMAD", "HMPD"]
     if not L2Auth:
         return {
             "success": False,
@@ -93,7 +93,7 @@ def pharmaGetPateient(role,patientId):
 @app.route('/pharmacy/patient/newinvoice/<patientID>', methods=['POST'])
 @authorization
 def newinvoice(role,patientID):
-    L2Auth = role in ["HMAD", "HMLD"]
+    L2Auth = role in ["HMAD", "HMPD"]
     if not L2Auth:
         return {
             "success": False,
