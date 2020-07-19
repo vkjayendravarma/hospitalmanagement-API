@@ -16,7 +16,7 @@ def getInventory(role,medicineID=None):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     #get all medicines
     if (request.method == 'GET'):
         data = pharmacyModel.PahrmacyInventory.objects()
@@ -41,7 +41,7 @@ def getInventory(role,medicineID=None):
         return {
                 'success': True,
                 'res': data
-            }
+            },status.HTTP_200_OK
         
 
             
@@ -54,7 +54,7 @@ def addSKU(role,medicineID):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     data = pharmacyModel.PahrmacyInventory.objects(id=medicineID).first()
 
     sku = request.get_json()
@@ -64,7 +64,7 @@ def addSKU(role,medicineID):
     return {
         'success': True,
         'res': data
-        }
+        },status.HTTP_200_OK
 
 
 @app.route('/pharmacy/patient/getpatientdata/<patientId>', methods=['GET'])
@@ -75,7 +75,7 @@ def pharmaGetPateient(role,patientId):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     data = patientModel.Patient.objects(patientId=patientId).first()
     if(data):
         pharmacyInvoices = shared.getPharmacyInvoices(data.pharmacy)
@@ -83,11 +83,11 @@ def pharmaGetPateient(role,patientId):
         return {
             'success': True,
             'res': data
-        }
+        },status.HTTP_200_OK
     return {
         'success': False,
         'message': 'Patient not found'
-    }
+    },status.HTTP_404_NOT_FOUND
             
 # new invoice to patients
 @app.route('/pharmacy/patient/newinvoice/<patientID>', methods=['POST'])
@@ -98,7 +98,7 @@ def newinvoice(role,patientID):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     if(patientID):
         res = []
         invoice = []
@@ -138,7 +138,7 @@ def newinvoice(role,patientID):
             return {
                 'success': True,
                 'res': res
-            }    
+            },status.HTTP_200_OK    
         else:
             return {
                 'success': False,

@@ -17,7 +17,7 @@ def register(role):
         return {
             'success': False,
             'message': 'Unauthorized'
-        }
+        },status.HTTP_401_UNAUTHORIZED
     req =request.get_json()
     try:
         name = req['name']
@@ -52,7 +52,7 @@ def login():
     if(user):
 
         if(bcrypt.checkpw(password, user.password.encode("UTF-8"))):
-            token = jwt.encode({'user': str(user['id']), "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=455)}, Config.SECRET_KEY)
+            token = jwt.encode({'user': str(user['id']), "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}, Config.SECRET_KEY)
             return {
                 "success": True,
                 "token": token.decode('UTF-8') + user['dept']              

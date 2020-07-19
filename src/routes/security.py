@@ -22,21 +22,82 @@ def authorization(func):
             role =  auth[-4:]            
             try:
                 decode = jwt.decode(token, Config.SECRET_KEY)                                    
-            except:
+            except jwt.exceptions.DecodeError as ex:
+                print (ex)
                 return {
                     'success': False,
                     'message': 'invalid token'
-                }, status.HTTP_403_FORBIDDEN
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.InvalidTokenError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.InvalidSignatureError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.ExpiredSignatureError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.InvalidAudienceError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.InvalidIssuerError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.InvalidIssuedAtError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.ImmatureSignatureError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.InvalidKeyError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.InvalidAlgorithmError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
+            except jwt.exceptions.MissingRequiredClaimError as ex:
+                print (ex)
+                return {
+                    'success': False,
+                    'message': 'invalid token'
+                },status.HTTP_401_UNAUTHORIZED
             if not roleCheck(decode['user'],role):
                 return {
                     'success': False,
-                    'message': 'Unauthorised shit'
+                    'message': 'Unauthorised'
                 },status.HTTP_401_UNAUTHORIZED
            
         else:        
             return {
                 'success': False,
-                'message': 'Unauthorised bitch'
+                'message': 'Unauthorised'
             }, status.HTTP_403_FORBIDDEN
         return func(role, *args, **kwargs)
     return decorated

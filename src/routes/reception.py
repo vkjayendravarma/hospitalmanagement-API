@@ -18,7 +18,7 @@ def newPatient(role):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     req = request.get_json()
     try:
         ssnid = req['ssnid']
@@ -31,8 +31,9 @@ def newPatient(role):
         state = req['state']
     except KeyError as e:
         return {
+            "success":False,
             "message": "missing"
-        }
+        },status.HTTP_400_BAD_REQUEST
 
     config = patientModel.config.objects().first()
     patientId = config.patientId +1
@@ -41,9 +42,9 @@ def newPatient(role):
         patient = patientModel.Patient(ssnid=ssnid, patientId=patientId, name=name, age=age, address=address, dateOfJoining=dateOfJoining, roomType=roomType, city=city, state=state).save()
         patientid = str(patient['patientId'])
     except mongoengine.errors.NotUniqueError as e:
-        return {'success': False, 'message': "SSN ID exists"}
+        return {'success': False, 'message': "SSN ID exists"},status.HTTP_406_NOT_ACCEPTABLE
     except mongoengine.errors.ValidationError as e:
-        return {'success': False, 'message': "Missing field"}
+        return {'success': False, 'message': "Missing field"},status.HTTP_400_BAD_REQUEST
 
     return {
         'success': True,
@@ -51,7 +52,7 @@ def newPatient(role):
             'message': 'patient created',
             'patientId': patientid
         }
-    }
+    },status.HTTP_200_OK
 
 # return all patients
 
@@ -68,8 +69,8 @@ def allPatients(role):
         }, status.HTTP_200_OK
     return {
         'success': False,
-        'message': "Unauthorised"
-    }
+        'message': "Unauthorised route"
+    },status.HTTP_401_UNAUTHORIZED
 
 # GET return patient data
 # POST update patient data
@@ -85,7 +86,7 @@ def Patient(role,patientId):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     
     if request.method == 'GET':
         data = patientModel.Patient.objects(patientId=patientId).first()
@@ -97,11 +98,11 @@ def Patient(role,patientId):
             return {
                 'success': True,
                 'res': data
-            }
+            },status.HTTP_200_OK
         return {
             'success': False,
             'message': 'Patient not found'
-        }
+        },status.HTTP_404_NOT_FOUND
 
     if request.method == 'POST':
         data = patientModel.Patient.objects(patientId=patientId)
@@ -123,12 +124,12 @@ def Patient(role,patientId):
             return {
                 'success': True,
                 'message': 'updated'
-            }
+            },status.HTTP_200_OK
         else:
             return {
                 'success': False,
                 'message': 'Patient not found'
-            }
+            },status.HTTP_404_NOT_FOUND
 
         
 
@@ -140,12 +141,12 @@ def Patient(role,patientId):
             return {
                 'success': True,
                 'message': 'patient discharged'
-            }
+            },status.HTTP_200_OK
         else:
             return {
                 'success': False,
                 'message': 'Patient not found'
-            }
+            },status.HTTP_404_NOT_FOUND
 
     if(request.method == 'DELETE'):
         data = patientModel.Patient.objects(patientId=patientId)
@@ -156,9 +157,9 @@ def Patient(role,patientId):
             return {
                 'success': True,
                 'message': 'deleted'
-            }
+            },status.HTTP_200_OK
         else:
             return {
                 'success': False,
                 'message': 'Patient not found'
-            }
+            },status.HTTP_404_NOT_FOUND

@@ -16,7 +16,7 @@ def getLabInventory(role,medicineID=None):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     #get all tests
     if (request.method == 'GET'):
         data = labModel.LabInventory.objects()
@@ -40,7 +40,7 @@ def getLabInventory(role,medicineID=None):
         return {
                 'success': True,
                 'res': data
-            }
+            },status.HTTP_200_OK
 
 
 @app.route('/lab/patient/getpatientdata/<patientId>', methods=['GET'])
@@ -51,7 +51,7 @@ def labGetPateient(role,patientId):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     data = patientModel.Patient.objects(patientId=patientId).first()
     if(data):
         labInvoices = shared.getLabInvoices(data.diagnostics)
@@ -59,11 +59,11 @@ def labGetPateient(role,patientId):
         return {
             'success': True,
             'res': data
-        }
+        },status.HTTP_200_OK
     return {
         'success': False,
         'message': 'Patient not found'
-    }
+    },status.HTTP_404_NOT_FOUND
 
 
 # new invoice to patients
@@ -75,7 +75,7 @@ def newLabinvoice(role,patientID):
         return {
             "success": False,
             "message": "Unauthorized"
-        }
+        },status.HTTP_401_UNAUTHORIZED
     if(patientID):
         res = []
         invoice = []
@@ -107,7 +107,7 @@ def newLabinvoice(role,patientID):
             return {
                 'status': True,
                 'message': "Invocice generated"
-            }    
+            },status.HTTP_200_OK    
         
         return {
             'success': False,
